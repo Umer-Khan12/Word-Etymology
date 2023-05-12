@@ -1,5 +1,6 @@
 import unittest
 import structures as struct
+import webscraper as ws
 
 class TestStructures(unittest.TestCase):
     def test_word(self):
@@ -29,6 +30,19 @@ class TestStructures(unittest.TestCase):
             cur = cur.next_val
         self.assertEqual(list_string, "123")
 
+
+class TestWebscraper(unittest.TestCase):
+    def test_get_wiki_url(self):
+        # Test non-reconstructed words
+        inputs_and_expected = {
+            ("land", "English"): "https://en.wiktionary.org/wiki/land#English",
+            ("sjksjweqwqe", "English"): "N/A",
+            ("encampment", "Chinese"): "N/A",
+            ("thee", "Dutch"): "https://en.wiktionary.org/wiki/thee#Dutch",
+            ("œuf", "French"): "https://en.wiktionary.org/wiki/œuf#French"
+        }
+        for inputs, expected in inputs_and_expected.items():
+            self.assertEqual(expected, ws.get_wiki_url(inputs[0], inputs[1]))
 
 
 if __name__ == '__main__':
