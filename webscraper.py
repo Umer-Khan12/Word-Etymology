@@ -7,5 +7,5 @@ class Word:
         self.meaning = meaning
 
     def __str__(self):
-        return self.spelling + self.ipa + "\nDefinition: " + self.meaning + "\nWiktionary link: " + self.url
+        return self.spelling + " " + self.ipa + "\nDefinition: " + self.meaning + "\nWiktionary link: " + self.url
 
