@@ -1,4 +1,7 @@
 import httplib2
+from bs4 import BeautifulSoup
+import requests
+
 
 def get_wiki_url(word, language):
     """
@@ -16,8 +19,24 @@ def get_wiki_url(word, language):
     # Make sure the page exists
     h = httplib2.Http()
     resp = h.request(url, "HEAD")
+    page_exists = False
     if int(resp[0]['status']) < 400:
-        return url
-    else:
-        return "N/A"
+        page_exists = True
 
+
+    if page_exists:
+        # It's possible that a wiktionary page exists but there's no section for the input language
+        # So we should check the page first to make sure a section with that language exists
+        html_text = requests.get(url).text
+        soup = BeautifulSoup(html_text, "lxml")
+        language_headers = []
+        for section in soup.find_all("span", class_="mw-headline"):
+            if section.parent.name == "h2":
+                language_headers.append(section.text)
+
+        if language not in language_headers:
+            return url + " (No section for " + language + ")"
+        else:
+            return url
+
+    return "No Wiktionary page found."

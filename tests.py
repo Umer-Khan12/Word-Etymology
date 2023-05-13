@@ -36,8 +36,8 @@ class TestWebscraper(unittest.TestCase):
         # Test non-reconstructed words
         inputs_and_expected = {
             ("land", "English"): "https://en.wiktionary.org/wiki/land#English",
-            ("sjksjweqwqe", "English"): "N/A",
-            ("encampment", "Chinese"): "N/A",
+            ("sjksjweqwqe", "English"): "No Wiktionary page found.",
+            ("encampment", "Chinese"): "https://en.wiktionary.org/wiki/encampment#Chinese (No section for Chinese)",
             ("thee", "Dutch"): "https://en.wiktionary.org/wiki/thee#Dutch",
             ("œuf", "French"): "https://en.wiktionary.org/wiki/œuf#French"
         }
