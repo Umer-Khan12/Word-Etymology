@@ -61,6 +61,12 @@ class TestWebscraper(unittest.TestCase):
                          , True)
         self.assertEqual(ws.is_red_link("https://en.wiktionary.org/wiki/neck"), False)
 
+    def test_languages_on_page(self):
+        self.assertEqual(ws.languages_on_page("https://en.wiktionary.org/wiki/bath"),
+                         ["English", "French", "Middle English", "Welsh", "Yola"])
+        self.assertEqual(ws.languages_on_page("https://en.wiktionary.org/wiki/blatant"),
+                         ["English"])
+
 
 if __name__ == '__main__':
     unittest.main()

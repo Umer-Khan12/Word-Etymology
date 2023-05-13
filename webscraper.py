@@ -32,19 +32,28 @@ def get_wiki_url(word, language):
     if page_exists:
         # It's possible that a wiktionary page exists but there's no section for the input language
         # So we should check the page first to make sure a section with that language exists
-        html_text = requests.get(url).text
-        soup = BeautifulSoup(html_text, "lxml")
-        language_headers = []
-        for section in soup.find_all("span", class_="mw-headline"):
-            if section.parent.name == "h2":
-                language_headers.append(section.text)
-
+        language_headers = languages_on_page(url)
         if language not in language_headers:
             return url + " (No section for " + language + ")"
         else:
             return url
 
     return "No Wiktionary page found."
+
+
+def languages_on_page(url):
+    """
+    Returns a list of the language sections present on a Wiktionary page
+    :param url: A Wiktionary url
+    :return: A list of strings containing the names of languages that have sections on the Wiktionary page
+    """
+    html_text = requests.get(url).text
+    soup = BeautifulSoup(html_text, "lxml")
+    language_headers = []
+    for section in soup.find_all("span", class_="mw-headline"):
+        if section.parent.name == "h2":
+            language_headers.append(section.text)
+    return language_headers
 
 
 def is_red_link(url):
@@ -57,4 +66,14 @@ def is_red_link(url):
         return True
     else:
         return False
+
+
+def get_wiki_ipa(url, language):
+    """
+    Returns the IPA pronunciation(s) of a given Wiktionary url and language
+    :param url: A Wiktionary url
+    :param language: Name of a language
+    :return: IPA of that language's section on the Wiktionary url if it exists, "Not found." otherwise
+    """
+    pass
 
