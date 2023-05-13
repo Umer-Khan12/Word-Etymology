@@ -9,12 +9,15 @@ def get_wiki_url(word, language):
     :return: url (string) that links to the word in that language on wiktionary, "N/A" if page doesn't exist
     """
 
+    # Replace spaces with underscores for languages that have them
+    language_url = language.replace(" ", "_")
+
     # Wiktionary url formats differ on if the word is a reconstruction or not
     # Reconstructed words start with '*'
     if word[0] == "*":
-        url = "https://en.wiktionary.org/wiki/Reconstruction:" + language + "/" + word[1:]
+        url = "https://en.wiktionary.org/wiki/Reconstruction:" + language_url + "/" + word[1:]
     else:
-        url = "https://en.wiktionary.org/wiki/" + word + "#" + language
+        url = "https://en.wiktionary.org/wiki/" + word + "#" + language_url
 
     # Make sure the page exists
     h = httplib2.Http()
