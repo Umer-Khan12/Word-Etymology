@@ -56,6 +56,11 @@ class TestWebscraper(unittest.TestCase):
         for inputs, expected in inputs_and_expected.items():
             self.assertEqual(expected, ws.get_wiki_url(inputs[0], inputs[1]))
 
+    def test_is_red_link(self):
+        self.assertEqual(ws.is_red_link("https://en.wiktionary.org/w/index.php?title=neeke&action=edit&redlink=1")
+                         , True)
+        self.assertEqual(ws.is_red_link("https://en.wiktionary.org/wiki/neck"), False)
+
 
 if __name__ == '__main__':
     unittest.main()

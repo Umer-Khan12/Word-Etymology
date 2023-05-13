@@ -45,3 +45,16 @@ def get_wiki_url(word, language):
             return url
 
     return "No Wiktionary page found."
+
+
+def is_red_link(url):
+    """
+    Some wiktionary links don't have filled entries, this checks if there is an entry
+    :param url: A Wiktionary url
+    :return: True if there is no entry on the page, False otherwise
+    """
+    if url[-9:] == "redlink=1":
+        return True
+    else:
+        return False
+
