@@ -33,13 +33,25 @@ class TestStructures(unittest.TestCase):
 
 class TestWebscraper(unittest.TestCase):
     def test_get_wiki_url(self):
-        # Test non-reconstructed words
+        # Test non-reconstructed word urls
         inputs_and_expected = {
             ("land", "English"): "https://en.wiktionary.org/wiki/land#English",
             ("sjksjweqwqe", "English"): "No Wiktionary page found.",
             ("encampment", "Chinese"): "https://en.wiktionary.org/wiki/encampment#Chinese (No section for Chinese)",
-            ("thee", "Dutch"): "https://en.wiktionary.org/wiki/thee#Dutch",
-            ("œuf", "French"): "https://en.wiktionary.org/wiki/œuf#French"
+            ("茶", "Chinese"): "https://en.wiktionary.org/wiki/茶#Chinese",
+            ("déjà vu", "English"): "https://en.wiktionary.org/wiki/déjà_vu#English",
+            ("خاکی", "Urdu"): "https://en.wiktionary.org/wiki/خاکی#Urdu",
+            ("茶", "German"): "https://en.wiktionary.org/wiki/茶#German (No section for German)",
+            ("heofon", "Old English"): "https://en.wiktionary.org/wiki/heofon#Old_English"
+        }
+        for inputs, expected in inputs_and_expected.items():
+            self.assertEqual(expected, ws.get_wiki_url(inputs[0], inputs[1]))
+
+        # Test reconstructed word urls
+        inputs_and_expected = {
+            ("himinaz", "Proto-Germanic"): "https://en.wiktionary.org/wiki/Reconstruction:Proto-Germanic/himinaz",
+            ("*h₂enh₁-", "Proto-Indo-European"):
+                "https://en.wiktionary.org/wiki/Reconstruction:Proto-Indo-European/h₂enh₁-"
         }
         for inputs, expected in inputs_and_expected.items():
             self.assertEqual(expected, ws.get_wiki_url(inputs[0], inputs[1]))
