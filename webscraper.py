@@ -1,5 +1,5 @@
 import httplib2
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, NavigableString
 import requests
 
 
@@ -68,12 +68,72 @@ def is_red_link(url):
         return False
 
 
-def get_wiki_ipa(url, language):
+def get_wiki_pronunciation(url, language):
     """
-    Returns the IPA pronunciation(s) of a given Wiktionary url and language
+    Returns the pronunciation section of a given Wiktionary url and language
     :param url: A Wiktionary url
     :param language: Name of a language
-    :return: IPA of that language's section on the Wiktionary url if it exists, "Not found." otherwise
+    :return: Pronunciation of that language's section on the Wiktionary url if it exists, "Not found." otherwise
     """
     pass
 
+
+def get_wiki_etymology(url, language):
+    """
+    Returns the etymology section on the Wiktionary url under the given language section
+    :param url: A Wiktionary url
+    :param language: Name of a language
+    :return: Etymology of that language's section on the Wiktionary url if it exists, "Not found." otherwise
+    """
+    pass
+
+
+def between(cur, end):
+    """
+    Helper function to grab text between two html tags
+    """
+    while cur and cur != end:
+        if isinstance(cur, NavigableString):
+            text = cur.strip()
+            if len(text):
+                yield text
+        cur = cur.next_element
+
+
+def return_section_soup(url, language):
+    """
+    Given a Wiktionary url and a language, returns that language's section's html in Beautiful Soup format
+    :param url: A Wiktionary url
+    :param language: Name of a language
+    :return: Beautiful Soup format html code of that language's section on the url if it exists, "Not found."
+             if that section doesn't exist on the page.
+    """
+    sections = languages_on_page(url)
+    if language not in sections:
+        return "Not found."
+
+    # Needs to be handled differently if the input language is the last section on the page
+    if sections.index(language) == len(sections) - 1:
+        pass
+    else:
+        # Grab the current language's heading and the heading of the language section after it
+        first_section = language
+        next_section = sections[sections.index(language) + 1]
+
+        html_text = requests.get(url).text
+        soup = BeautifulSoup(html_text, "lxml")
+
+        # Find the h2 tags that have first_section and next_section in their child's span's ids
+        for section in soup.find_all("span", class_="mw-headline"):
+            if section.parent.name == "h2" and section.text == first_section:
+                first_section_html = section.parent
+        for section in soup.find_all("span", class_="mw-headline"):
+            if section.parent.name == "h2" and section.text == next_section:
+                next_section_html = section.parent
+
+        print(''.join(text for text in between(first_section_html.next_sibling,
+                                               next_section_html)))
+        print(type(first_section_html))
+
+
+return_section_soup("https://en.wiktionary.org/wiki/bath", "English")
