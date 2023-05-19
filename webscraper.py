@@ -93,10 +93,7 @@ def between(cur, end):
     Helper function to grab text between two html tags
     """
     while cur and cur != end:
-        if isinstance(cur, NavigableString):
-            text = cur.strip()
-            if len(text):
-                yield text
+        yield str(cur)
         cur = cur.next_element
 
 
@@ -114,6 +111,7 @@ def return_section_soup(url, language):
 
     # Needs to be handled differently if the input language is the last section on the page
     if sections.index(language) == len(sections) - 1:
+        # TODO: Implement a version where the input language is the last on the page
         pass
     else:
         # Grab the current language's heading and the heading of the language section after it
@@ -131,9 +129,9 @@ def return_section_soup(url, language):
             if section.parent.name == "h2" and section.text == next_section:
                 next_section_html = section.parent
 
-        print(''.join(text for text in between(first_section_html.next_sibling,
-                                               next_section_html)))
-        print(type(first_section_html))
+        new_html = ""
+        for line in between(first_section_html.next_sibling, next_section_html):
+            new_html += str(line)
 
+        return BeautifulSoup(new_html, "lxml")
 
-return_section_soup("https://en.wiktionary.org/wiki/bath", "English")
