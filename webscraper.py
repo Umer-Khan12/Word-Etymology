@@ -1,5 +1,5 @@
 import httplib2
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup, Comment
 import requests
 
 
@@ -106,20 +106,33 @@ def return_section_soup(url, language):
              if that section doesn't exist on the page.
     """
     sections = languages_on_page(url)
+
+    html_text = requests.get(url).text
+    soup = BeautifulSoup(html_text, "lxml")
+
     if language not in sections:
         return "Not found."
 
     # Needs to be handled differently if the input language is the last section on the page
     if sections.index(language) == len(sections) - 1:
-        # TODO: Implement a version where the input language is the last on the page
-        pass
+        # Every wiktionary page follows its last language section with a cache usage comment
+        first_section = language
+        cache_comment = soup.find_all(text=lambda text:isinstance(text, Comment))[1]
+
+        # Find the h2 tag that has first_section in its child's span's id
+        for section in soup.find_all("span", class_="mw-headline"):
+            if section.parent.name == "h2" and section.text == first_section:
+                first_section_html = section.parent
+
+        new_html = ""
+        for line in between(first_section_html.next_sibling, cache_comment):
+            new_html += str(line)
+
+        return BeautifulSoup(new_html, "lxml")
     else:
         # Grab the current language's heading and the heading of the language section after it
         first_section = language
         next_section = sections[sections.index(language) + 1]
-
-        html_text = requests.get(url).text
-        soup = BeautifulSoup(html_text, "lxml")
 
         # Find the h2 tags that have first_section and next_section in their child's span's ids
         for section in soup.find_all("span", class_="mw-headline"):

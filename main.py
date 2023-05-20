@@ -1,4 +1,4 @@
-from bs4 import BeautifulSoup, NavigableString
+from bs4 import BeautifulSoup, NavigableString, Comment
 import requests
 
 
@@ -11,25 +11,16 @@ def between(cur, end):
         cur = cur.next_element
 
 
-html_text = requests.get("https://en.wiktionary.org/wiki/pool").text
+html_text = requests.get("https://en.wiktionary.org/wiki/%D7%91%D7%AA#Hebrew").text
 soup = BeautifulSoup(html_text, "lxml")
 
-first_section = "English"
-next_section = "Dutch"
-
 for section in soup.find_all("span", class_="mw-headline"):
-    if section.parent.name == "h2" and section.text == first_section:
+    if section.parent.name == "h2" and section.text == "Hebrew":
         first_section_html = section.parent
-for section in soup.find_all("span", class_="mw-headline"):
-    if section.parent.name == "h2" and section.text == next_section:
-        next_section_html = section.parent
 
 new_html = ""
-for c in between(first_section_html.next_sibling, next_section_html):
-    new_html += str(c)
 
-new_soup = BeautifulSoup(new_html, "lxml")
+next_section_html = soup.find_all(text=lambda text:isinstance(text, Comment))[1]
 
-for line in new_soup.find_all("span", class_="IPA"):
-    print(line)
-
+for line in between(first_section_html.next_sibling, next_section_html):
+    new_html += str(line)
