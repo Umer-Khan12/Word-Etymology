@@ -75,7 +75,29 @@ def get_wiki_pronunciation(url, language):
     :param language: Name of a language
     :return: Pronunciation of that language's section on the Wiktionary url if it exists, "Not found." otherwise
     """
-    pass
+    soup = return_section_soup(url, language)
+    # If the language doesn't have a section on the Wiktionary page
+    if soup is None:
+        return "Not found."
+
+    pronunciation_h3 = None
+    for section in soup.find_all("span", class_="mw-headline"):
+        if section.text == "Pronunciation":
+            pronunciation_h3 = section.parent
+            break
+
+    # If there's no pronunciation section
+    if pronunciation_h3 is None:
+        return "Not found."
+
+    # The ul tag for the pronunciation list is 10 siblings over from the h3 tag
+    pronunciation_ul_html = pronunciation_h3
+    for i in range(10):
+        pronunciation_ul_html = pronunciation_ul_html.next_sibling
+
+    for li in pronunciation_ul_html.find_all("li"):
+        print(li.text)
+
 
 
 def get_wiki_etymology(url, language):
@@ -102,7 +124,7 @@ def return_section_soup(url, language):
     Given a Wiktionary url and a language, returns that language's section's html in Beautiful Soup format
     :param url: A Wiktionary url
     :param language: Name of a language
-    :return: Beautiful Soup format html code of that language's section on the url if it exists, "Not found."
+    :return: Beautiful Soup format html code of that language's section on the url if it exists, None
              if that section doesn't exist on the page.
     """
     sections = languages_on_page(url)
@@ -111,7 +133,7 @@ def return_section_soup(url, language):
     soup = BeautifulSoup(html_text, "lxml")
 
     if language not in sections:
-        return "Not found."
+        return None
 
     # Needs to be handled differently if the input language is the last section on the page
     if sections.index(language) == len(sections) - 1:
@@ -148,3 +170,5 @@ def return_section_soup(url, language):
 
         return BeautifulSoup(new_html, "lxml")
 
+
+get_wiki_pronunciation("https://en.wiktionary.org/wiki/bath", "English")
