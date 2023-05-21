@@ -1,6 +1,7 @@
 import httplib2
 from bs4 import BeautifulSoup, Comment
 import requests
+import io
 
 
 def get_wiki_url(word, language):
@@ -95,9 +96,32 @@ def get_wiki_pronunciation(url, language):
     for i in range(10):
         pronunciation_ul_html = pronunciation_ul_html.next_sibling
 
+    # Need to reformat the pronunciations so that the same ones arent repeated and there's one on each line
+    pronunciations_unformatted = ""
     for li in pronunciation_ul_html.find_all("li"):
-        print(li.text)
+        pronunciations_unformatted += li.text + "\n"
 
+    pronunciations_unformatted.rstrip()
+    pronunciations_unrepeated = []
+    for line in io.StringIO(pronunciations_unformatted):
+        if line.rstrip() not in pronunciations_unrepeated:
+            pronunciations_unrepeated.append(line.rstrip())
+
+    # Remove some other repeated IPAs and irrelevant information
+    pronunciations_formatted = []
+    for line in pronunciations_unrepeated:
+        if line[2:4] == "PR":
+            continue
+        if line[0:5] == "Audio":
+            continue
+        if line[0:6] == "Rhymes":
+            continue
+        if line[0:9] == "Homophone":
+            continue
+        else:
+            pronunciations_formatted.append(line.replace("(key)", ""))
+
+    return "".join([x + "\n" for x in pronunciations_formatted]).rstrip()
 
 
 def get_wiki_etymology(url, language):
@@ -171,4 +195,10 @@ def return_section_soup(url, language):
         return BeautifulSoup(new_html, "lxml")
 
 
-get_wiki_pronunciation("https://en.wiktionary.org/wiki/bath", "English")
+while True:
+    word = input("Enter a word: ")
+    language = input("Enter a language: ")
+    print("The pronunciation for", word, "in", language, "is:")
+    url = get_wiki_url(word, language)
+    print(get_wiki_pronunciation(url, language))
+    print("\n")
