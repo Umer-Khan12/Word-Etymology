@@ -7,7 +7,9 @@ import io
 def get_wiki_url(word, language):
     """
     word and language are both string inputs
-    :return: url (string) that links to the word in that language on wiktionary, "N/A" if page doesn't exist
+    :return: url (string) that links to the word in that language on wiktionary. If a page of that word
+             exists then it returns a list [url, True/False] where the 2nd element is True if that word has
+             a section in the input language. If a page with that word doesn't exist then it returns None.
     """
 
     # Replace spaces with underscores for words and languages that have them
@@ -35,11 +37,11 @@ def get_wiki_url(word, language):
         # So we should check the page first to make sure a section with that language exists
         language_headers = languages_on_page(url)
         if language not in language_headers:
-            return url + " (No section for " + language + ")"
+            return [url, False]
         else:
-            return url
+            return [url, True]
 
-    return "No Wiktionary page found."
+    return None
 
 
 def languages_on_page(url):
@@ -117,6 +119,8 @@ def get_wiki_pronunciation(url, language):
         if line[0:6] == "Rhymes":
             continue
         if line[0:9] == "Homophone":
+            continue
+        if line[0:15] == "Syllabification":
             continue
         else:
             pronunciations_formatted.append(line.replace("(key)", ""))
@@ -198,7 +202,14 @@ def return_section_soup(url, language):
 while True:
     word = input("Enter a word: ")
     language = input("Enter a language: ")
-    print("The pronunciation for", word, "in", language, "is:")
-    url = get_wiki_url(word, language)
-    print(get_wiki_pronunciation(url, language))
-    print("\n")
+    url_returned_value = get_wiki_url(word, language)
+    if url_returned_value is not None:
+        url = url_returned_value[0]
+        red_link = is_red_link(url)
+        if not red_link:
+            print("The pronunciation for", word, "in", language, "is:")
+            print(get_wiki_pronunciation(url, language))
+            print("\n")
+    else:
+        print("A Wiktionary page for this word doesn't exist or the page is incomplete.")
+        print("\n")
