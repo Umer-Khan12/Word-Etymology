@@ -135,7 +135,27 @@ def get_wiki_etymology(url, language):
     :param language: Name of a language
     :return: Etymology of that language's section on the Wiktionary url if it exists, "Not found." otherwise
     """
-    pass
+    soup = return_section_soup(url, language)
+    # If the language doesn't have a section on the Wiktionary page
+    if soup is None:
+        return "Not found."
+
+    etymology_h3 = None
+    for section in soup.find_all("span", class_="mw-headline"):
+        if section.text == "Etymology" or section.text == "Etymology 1":
+            etymology_h3 = section.parent
+            break
+
+    # If there's no etymology section
+    if etymology_h3 is None:
+        return "Not found."
+
+    # The p tag for the etymology is 10 siblings over from the h3 tag
+    etymology_p_html = etymology_h3
+    for i in range(10):
+        etymology_p_html = etymology_p_html.next_sibling
+
+    return etymology_p_html.get_text().rstrip()
 
 
 def between(cur, end):
@@ -199,6 +219,7 @@ def return_section_soup(url, language):
         return BeautifulSoup(new_html, "lxml")
 
 
+"""
 while True:
     word = input("Enter a word: ")
     language = input("Enter a language: ")
@@ -210,6 +231,12 @@ while True:
             print("The pronunciation for", word, "in", language, "is:")
             print(get_wiki_pronunciation(url, language))
             print("\n")
+        else:
+            print("A wiktionary page for this word exists but nothing has been added to it.")
     else:
         print("A Wiktionary page for this word doesn't exist or the page is incomplete.")
         print("\n")
+"""
+
+
+print(get_wiki_etymology("https://en.wiktionary.org/wiki/bath#English", "English"))

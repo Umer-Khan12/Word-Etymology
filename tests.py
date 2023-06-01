@@ -57,16 +57,28 @@ class TestWebscraper(unittest.TestCase):
         for inputs, expected in inputs_and_expected.items():
             self.assertEqual(expected, ws.get_wiki_url(inputs[0], inputs[1]))
 
+
     def test_is_red_link(self):
         self.assertEqual(ws.is_red_link("https://en.wiktionary.org/w/index.php?title=neeke&action=edit&redlink=1")
                          , True)
         self.assertEqual(ws.is_red_link("https://en.wiktionary.org/wiki/neck"), False)
+
 
     def test_languages_on_page(self):
         self.assertEqual(ws.languages_on_page("https://en.wiktionary.org/wiki/bath"),
                          ["English", "French", "Middle English", "Welsh", "Yola"])
         self.assertEqual(ws.languages_on_page("https://en.wiktionary.org/wiki/blatant"),
                          ["English"])
+
+
+    def test_get_wiki_pronunciation(self):
+        # TODO: write unit tests
+        pass
+
+
+    def test_get_wiki_etymology(self):
+        # TODO: write unit tests
+        pass
 
 
 if __name__ == '__main__':
