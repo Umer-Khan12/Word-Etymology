@@ -219,3 +219,5 @@ def return_section_soup(url, language):
         return BeautifulSoup(new_html, "lxml")
 
 
+print(get_wiki_pronunciation("https://en.wiktionary.org/wiki/bath#English", "English"))
+

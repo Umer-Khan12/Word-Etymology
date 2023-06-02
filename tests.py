@@ -72,8 +72,19 @@ class TestWebscraper(unittest.TestCase):
 
 
     def test_get_wiki_pronunciation(self):
-        # TODO: write unit tests
-        pass
+        inputs_and_expected = {
+            ("https://en.wiktionary.org/wiki/bath#English", "English"):
+                "(Received Pronunciation, General South African) IPA: [bɑːθ]\n(North India) IPA: [bɑːt̪ʰ]\n"
+                "(South India) IPA: [bɑːt̪]\n(General Australian, New Zealand) IPA: /bɐːθ/\n"
+                "(US, Canada) IPA: [bæθ~bɛəθ~beəθ]\n(Northern England, Ireland) IPA: [baθ~bæθ]",
+            ("https://en.wiktionary.org/wiki/bath#English", "qwerty"): "Not found.",
+            ("https://en.wiktionary.org/wiki/bath#English", "Welsh"):
+                "IPA: /baːθ/",
+            ("https://en.wiktionary.org/wiki/%E0%A4%AC%E0%A5%81%E0%A4%A6%E0%A5%8D%E0%A4%A7#Sanskrit", "Sanskrit"):
+                "(Vedic) IPA: /bud.dʱɐ́/, [bud̚.dʱɐ́]\n(Classical) IPA: /ˈbud̪.d̪ʱɐ/, [ˈbud̪̚.d̪ʱɐ]",
+        }
+        for inputs, expected in inputs_and_expected.items():
+            self.assertEqual(expected, ws.get_wiki_pronunciation(inputs[0], inputs[1]))
 
 
     def test_get_wiki_etymology(self):
