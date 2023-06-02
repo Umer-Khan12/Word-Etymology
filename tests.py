@@ -77,8 +77,22 @@ class TestWebscraper(unittest.TestCase):
 
 
     def test_get_wiki_etymology(self):
-        # TODO: write unit tests
-        pass
+        inputs_and_expected = {
+            ("https://en.wiktionary.org/wiki/bath#English", "English"):
+                "From Middle English bath, baþ, from Old English bæþ (“bath”), from Proto-West Germanic *baþ, from "
+                "Proto-Germanic *baþą (“bath”), from Proto-Indo-European *bʰeh₁- (“to warm”). Corresponding inherited "
+                "verbs are beath and bathe.",
+            ("https://en.wiktionary.org/wiki/bath#English", "qwerty"): "Not found.",
+            ("https://en.wiktionary.org/wiki/bath#English", "Welsh"):
+                "Probably from Proto-Celtic *batto-; according to the GPC, possibly related to Latin battuo "
+                "(“I fight, pound, beat (up)”), though the semantics are far from certain.[1]",
+            ("https://en.wiktionary.org/wiki/%E0%A4%AC%E0%A5%81%E0%A4%A6%E0%A5%8D%E0%A4%A7#Sanskrit", "Sanskrit"):
+                "From Proto-Indo-Aryan *buddʰás, from Proto-Indo-Iranian *bʰudᶻdʰás, from Proto-Indo-European "
+                "*bʰudʰtós (“awake, aware”). Cognate with Ancient Greek πυστός (pustós), Avestan 𐬠𐬎𐬯𐬙𐬀‎ (busta) "
+                "and Russian будить (buditʹ, “to wake up”).",
+        }
+        for inputs, expected in inputs_and_expected.items():
+            self.assertEqual(expected, ws.get_wiki_etymology(inputs[0], inputs[1]))
 
 
 if __name__ == '__main__':

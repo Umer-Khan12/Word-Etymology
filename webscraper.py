@@ -219,24 +219,3 @@ def return_section_soup(url, language):
         return BeautifulSoup(new_html, "lxml")
 
 
-"""
-while True:
-    word = input("Enter a word: ")
-    language = input("Enter a language: ")
-    url_returned_value = get_wiki_url(word, language)
-    if url_returned_value is not None:
-        url = url_returned_value[0]
-        red_link = is_red_link(url)
-        if not red_link:
-            print("The pronunciation for", word, "in", language, "is:")
-            print(get_wiki_pronunciation(url, language))
-            print("\n")
-        else:
-            print("A wiktionary page for this word exists but nothing has been added to it.")
-    else:
-        print("A Wiktionary page for this word doesn't exist or the page is incomplete.")
-        print("\n")
-"""
-
-
-print(get_wiki_etymology("https://en.wiktionary.org/wiki/bath#English", "English"))
