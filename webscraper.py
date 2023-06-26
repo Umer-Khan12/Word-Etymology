@@ -158,6 +158,58 @@ def get_wiki_etymology(url, language):
     return etymology_p_html.get_text().rstrip()
 
 
+def get_wiki_definition(url, language):
+    """
+    Returns the definition entry of the Wiktionary url under the given language section
+    :param url: A Wiktionary url
+    :param language: Name of a language
+    :return: Definition entry of that language's section on the Wiktionary url if it exists, "Not found." otherwise
+    """
+    soup = return_section_soup(url, language)
+    # If the language doesn't have a section on the Wiktionary page
+    if soup is None:
+        return "Not found."
+
+    # A list of possible id's that the input word's html tag could have
+    possible_ids = ["Noun", "Verb", "Adjective", "Determiner", "Pronoun", "Conjunction", "Suffix", "Prefix", "Adverb",
+                    "Numeral"]
+
+    definition_tag = None
+    for section in soup.find_all("span", class_="mw-headline"):
+        if section.text in possible_ids:
+            definition_tag = section.parent
+            break
+
+    # If there's no definition section
+    if definition_tag is None:
+        return "Not found."
+
+    # Get the <p> text following the definition header
+    definition_html = definition_tag
+    for i in range(10):
+        definition_html = definition_html.next_sibling
+
+    output_text = ""
+    output_text += definition_html.get_text().rstrip()
+
+    # Get the <ol> text following the <p> tag
+    while str(definition_html)[0:4] != "<ol>":
+        definition_html = definition_html.next_sibling
+
+    # Get the list entries
+    definitions_unformatted = ""
+    for li in definition_html.find_all("li"):
+        definitions_unformatted += li.text + "\n"
+
+    definitions_unformatted.rstrip()
+    definitions_unrepeated = []
+    for line in io.StringIO(definitions_unformatted):
+        if line.rstrip() not in definitions_unrepeated:
+            definitions_unrepeated.append(line.rstrip())
+
+    return output_text + "\n" + "".join(["    " + x + "\n" for x in definitions_unrepeated]).rstrip()
+
+
 def between(cur, end):
     """
     Helper function to grab text between two html tags
@@ -217,7 +269,3 @@ def return_section_soup(url, language):
             new_html += str(line)
 
         return BeautifulSoup(new_html, "lxml")
-
-
-print(get_wiki_pronunciation("https://en.wiktionary.org/wiki/bath#English", "English"))
-
