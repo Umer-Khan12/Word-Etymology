@@ -207,7 +207,7 @@ def get_wiki_definition(url, language):
             li_formatted = remove_inner_tags("<div class=\"citation-whole\">", "</div>", li_formatted)
             li_formatted = remove_inner_tags("<span class=\"cited-source\">", "</span>", li_formatted)
             li_formatted = remove_inner_tags("<ul style=\"display: block;\">", "</ul>", li_formatted)
-            definitions_unformatted += str(cur_num) + ". " + li_formatted.text.rstrip() + "\n"
+            definitions_unformatted += str(cur_num) + ". " + remove_everything_after_period(li_formatted.text.rstrip()) + "\n"
             cur_num += 1
 
     definitions_unformatted.rstrip()
@@ -286,6 +286,15 @@ def remove_inner_tags(tag_open, tag_close, html):
     return BeautifulSoup(new_html, "lxml")
 
 
+def remove_everything_after_period(s):
+    new_s = ""
+    for i in s:
+        new_s += i
+        if i == ".":
+            return new_s
+    return new_s
+
+
 def return_section_soup(url, language):
     """
     Given a Wiktionary url and a language, returns that language's section's html in Beautiful Soup format
@@ -337,5 +346,3 @@ def return_section_soup(url, language):
 
         return BeautifulSoup(new_html, "lxml")
 
-
-print(get_wiki_definition("https://en.wiktionary.org/wiki/cattle", "English"))

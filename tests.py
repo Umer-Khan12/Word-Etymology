@@ -109,14 +109,18 @@ class TestWebscraper(unittest.TestCase):
     def test_get_wiki_definition(self):
         inputs_and_expected = {
             ("https://en.wiktionary.org/wiki/Reconstruction:Proto-Hellenic/k%CA%B7%C3%A9twores", "Proto-Hellenic"):
-                "*kʷétwores\n    four",
+                "*kʷétwores\n    1. four",
             ("https://en.wiktionary.org/wiki/bath#English", "qwerty"): "Not found.",
             ("https://en.wiktionary.org/wiki/%F0%90%8C%B2%F0%90%8D%82%F0%90%8C%B9%F0%90%8C%B8%F0%90%8D%83#Gothic",
              "Gothic"):
-                "𐌲𐍂𐌹𐌸𐍃 • (griþs) f\n    rank, grade, standing",
-            ("https://en.wiktionary.org/wiki/%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A5%E0%A4%B8%E0%A5%8D#Sanskrit",
-             "Sanskrit"):
-                "प्रथस् • (práthas) n\n    width, extension",
+                "𐌲𐍂𐌹𐌸𐍃 • (griþs) f\n    1. rank, grade, standing",
+            ("https://en.wiktionary.org/wiki/cattle", "English"):
+                "cattle pl (normally plural, singular cattle)\n"
+                "    1. Domesticated bovine animals (cows, bulls, steers etc).\n"
+                "    2. Certain other livestock, such as sheep, pigs or horses.\n"
+                "    3. (derogatory, figuratively) People who resemble domesticated bovine animals in behavior or destiny.\n"
+                "    4. (obsolete, English law, sometimes countable, plural cattles) chattel\n"
+                "    5. (uncountable, rare) Used in restricted contexts to refer to the meat derived from cattle.",
         }
         for inputs, expected in inputs_and_expected.items():
             self.assertEqual(expected, ws.get_wiki_definition(inputs[0], inputs[1]))
