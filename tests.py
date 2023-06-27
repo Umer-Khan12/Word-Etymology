@@ -106,5 +106,21 @@ class TestWebscraper(unittest.TestCase):
             self.assertEqual(expected, ws.get_wiki_etymology(inputs[0], inputs[1]))
 
 
+    def test_get_wiki_definition(self):
+        inputs_and_expected = {
+            ("https://en.wiktionary.org/wiki/Reconstruction:Proto-Hellenic/k%CA%B7%C3%A9twores", "Proto-Hellenic"):
+                "*kʷétwores\n    four",
+            ("https://en.wiktionary.org/wiki/bath#English", "qwerty"): "Not found.",
+            ("https://en.wiktionary.org/wiki/%F0%90%8C%B2%F0%90%8D%82%F0%90%8C%B9%F0%90%8C%B8%F0%90%8D%83#Gothic",
+             "Gothic"):
+                "𐌲𐍂𐌹𐌸𐍃 • (griþs) f\n    rank, grade, standing",
+            ("https://en.wiktionary.org/wiki/%E0%A4%AA%E0%A5%8D%E0%A4%B0%E0%A4%A5%E0%A4%B8%E0%A5%8D#Sanskrit",
+             "Sanskrit"):
+                "प्रथस् • (práthas) n\n    width, extension",
+        }
+        for inputs, expected in inputs_and_expected.items():
+            self.assertEqual(expected, ws.get_wiki_definition(inputs[0], inputs[1]))
+
+
 if __name__ == '__main__':
     unittest.main()
