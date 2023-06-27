@@ -200,9 +200,14 @@ def get_wiki_definition(url, language):
     definitions_unformatted = ""
     cur_num = 1
     for li in definition_html.find_all("li"):
-        # Don't include the sentence examples
-        if str(li)[0:4] != "<dl>":
-            definitions_unformatted += str(cur_num) + ". " + remove_inner_tags("<dl>", li).text + "\n"
+        if li.parent.name == "ol":
+            # Don't include the sentence examples or quotations or citations
+            li_formatted = remove_inner_tags("<dl>", "</dl>", li)
+            li_formatted = remove_inner_tags("<dd>", "</dd>", li_formatted)
+            li_formatted = remove_inner_tags("<div class=\"citation-whole\">", "</div>", li_formatted)
+            li_formatted = remove_inner_tags("<span class=\"cited-source\">", "</span>", li_formatted)
+            li_formatted = remove_inner_tags("<ul style=\"display: block;\">", "</ul>", li_formatted)
+            definitions_unformatted += str(cur_num) + ". " + li_formatted.text.rstrip() + "\n"
             cur_num += 1
 
     definitions_unformatted.rstrip()
@@ -223,14 +228,15 @@ def between(cur, end):
         cur = cur.next_element
 
 
-def remove_inner_tags(tag, html):
+def remove_inner_tags(tag_open, tag_close, html):
     """
-    Helper function to remove tags (<foo>...</foo>) and their content from inner text of html
+    Helper function to remove tags (<foo>...</foo>) and their content from inner text of html.
+    :param tag_close: closing form of the tag to be removed (a string written as </a>)
     :param html: The html that needs to be modified
-    :param tag: tag to be removed (a string written as <a>)
+    :param tag_open: opening form of the tag to be removed (a string written as <a>)
     :return: html without the tag and its contents
     """
-    html_str = str(html)
+    html_str = str(html).replace("\n", " ")
     new_html = ""
 
     # Loop over each letter in the string
@@ -241,33 +247,35 @@ def remove_inner_tags(tag, html):
         # Used to not include the closing part of the tag
         if tag_deletion_length != 0:
             tag_deletion_length -= 1
+            cur_index += 1
             continue
 
         if letter == "<" and not tag_encountered:
             cur_tag = ""
             # Keep going until we figure out what the tag is
-            for i in new_html[cur_index:]:
+            for i in html_str[cur_index:]:
                 if i != ">":
                     cur_tag += i
                 elif i == ">":
                     cur_tag += i
                     break
-            if cur_tag == tag:
+            if cur_tag == tag_open:
                 tag_encountered = True
 
         if letter == "<" and tag_encountered:
-            # Need to check if its a closing tag
+            # Need to check if its the closing tag
             cur_tag = ""
-            for i in new_html[cur_index:]:
+            for i in html_str[cur_index:]:
                 if i != ">":
                     cur_tag += i
                 elif i == ">":
                     cur_tag += i
                     break
-            if cur_tag == "</" + tag[1:]:
+            if cur_tag == tag_close:
                 # If its the closing tag then we count how many more letters we need to skip to not include it
                 tag_encountered = False
-                tag_deletion_length = len(tag[1:]) + 1
+                tag_deletion_length = len(tag_close) - 1
+                cur_index += 1
                 continue
 
         # Add to the new_html string if we aren't at the tag yet or aren't deleting the rest of the tag
