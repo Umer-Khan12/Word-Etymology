@@ -198,8 +198,12 @@ def get_wiki_definition(url, language):
 
     # Get the list entries
     definitions_unformatted = ""
+    cur_num = 1
     for li in definition_html.find_all("li"):
-        definitions_unformatted += li.text + "\n"
+        # Don't include the sentence examples
+        if str(li)[0:4] != "<dl>":
+            definitions_unformatted += str(cur_num) + ". " + remove_inner_tags("<dl>", li).text + "\n"
+            cur_num += 1
 
     definitions_unformatted.rstrip()
     definitions_unrepeated = []
@@ -217,6 +221,61 @@ def between(cur, end):
     while cur and cur != end:
         yield str(cur)
         cur = cur.next_element
+
+
+def remove_inner_tags(tag, html):
+    """
+    Helper function to remove tags (<foo>...</foo>) and their content from inner text of html
+    :param html: The html that needs to be modified
+    :param tag: tag to be removed (a string written as <a>)
+    :return: html without the tag and its contents
+    """
+    html_str = str(html)
+    new_html = ""
+
+    # Loop over each letter in the string
+    tag_encountered = False
+    tag_deletion_length = 0
+    cur_index = 0
+    for letter in html_str:
+        # Used to not include the closing part of the tag
+        if tag_deletion_length != 0:
+            tag_deletion_length -= 1
+            continue
+
+        if letter == "<" and not tag_encountered:
+            cur_tag = ""
+            # Keep going until we figure out what the tag is
+            for i in new_html[cur_index:]:
+                if i != ">":
+                    cur_tag += i
+                elif i == ">":
+                    cur_tag += i
+                    break
+            if cur_tag == tag:
+                tag_encountered = True
+
+        if letter == "<" and tag_encountered:
+            # Need to check if its a closing tag
+            cur_tag = ""
+            for i in new_html[cur_index:]:
+                if i != ">":
+                    cur_tag += i
+                elif i == ">":
+                    cur_tag += i
+                    break
+            if cur_tag == "</" + tag[1:]:
+                # If its the closing tag then we count how many more letters we need to skip to not include it
+                tag_encountered = False
+                tag_deletion_length = len(tag[1:]) + 1
+                continue
+
+        # Add to the new_html string if we aren't at the tag yet or aren't deleting the rest of the tag
+        if not tag_encountered:
+            new_html += letter
+        cur_index += 1
+
+    return BeautifulSoup(new_html, "lxml")
 
 
 def return_section_soup(url, language):
@@ -269,3 +328,6 @@ def return_section_soup(url, language):
             new_html += str(line)
 
         return BeautifulSoup(new_html, "lxml")
+
+
+print(get_wiki_definition("https://en.wiktionary.org/wiki/cattle", "English"))
