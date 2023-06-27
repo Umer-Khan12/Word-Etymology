@@ -26,13 +26,13 @@ while True:
 
     url_tuple = ws.get_wiki_url(word, language)
     if url_tuple is None:
-        print("\nA Wiktionary URL doesn't exist for this word (in any language).")
+        print("\nA Wiktionary URL doesn't exist for", "'" + word + "'","(in any language).")
     elif url_tuple[1] is False:
-        print("\nA Wiktionary URL exists for this word but not in this language.")
+        print("\nA Wiktionary URL exists for", "'" + word + "'", "but not in " + language + ".")
         print("The languages for this word on Wiktionary are: ")
         print("    " + ", ".join(ws.languages_on_page(url_tuple[0])))
     else:
         url = url_tuple[0]
-        print("Definition:\n" + ws.get_wiki_definition(url, language) + "\n")
+        print("\nDefinition:\n" + ws.get_wiki_definition(url, language) + "\n")
         print("Pronunciation:\n" + ws.get_wiki_pronunciation(url, language) + "\n")
         print("Etymology:\n" + ws.get_wiki_etymology(url, language))
