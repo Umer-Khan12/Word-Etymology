@@ -112,15 +112,15 @@ def get_wiki_pronunciation(url, language):
     # Remove some other repeated IPAs and irrelevant information
     pronunciations_formatted = []
     for line in pronunciations_unrepeated:
-        if line[2:4] == "PR":
+        if line[2:4] == "PR" and "IPA" not in line:
             continue
-        if line[0:5] == "Audio":
+        elif line[0:5] == "Audio" and "IPA" not in line:
             continue
-        if line[0:6] == "Rhymes":
+        elif line[0:6] == "Rhymes" and "IPA" not in line:
             continue
-        if line[0:9] == "Homophone":
+        elif line[0:9] == "Homophone" and "IPA" not in line:
             continue
-        if line[0:15] == "Syllabification":
+        elif line[0:15] == "Syllabification" and "IPA" not in line:
             continue
         else:
             pronunciations_formatted.append(line.replace("(key)", ""))
@@ -346,3 +346,6 @@ def return_section_soup(url, language):
 
         return BeautifulSoup(new_html, "lxml")
 
+
+
+print(get_wiki_pronunciation("https://en.wiktionary.org/wiki/name#English", "English"))
