@@ -74,8 +74,10 @@ class TestWebscraper(unittest.TestCase):
     def test_get_wiki_pronunciation(self):
         inputs_and_expected = {
             ("https://en.wiktionary.org/wiki/bath#English", "English"):
+                "enPR: bäth, IPA: /bɑːθ/\n"
                 "(Received Pronunciation, General South African) IPA: [bɑːθ]\n(North India) IPA: [bɑːt̪ʰ]\n"
                 "(South India) IPA: [bɑːt̪]\n(General Australian, New Zealand) IPA: /bɐːθ/\n"
+                "enPR: băth, IPA: /bæθ/\n"
                 "(US, Canada) IPA: [bæθ~bɛəθ~beəθ]\n(Northern England, Ireland) IPA: [baθ~bæθ]",
             ("https://en.wiktionary.org/wiki/bath#English", "qwerty"): "Not found.",
             ("https://en.wiktionary.org/wiki/bath#English", "Welsh"):

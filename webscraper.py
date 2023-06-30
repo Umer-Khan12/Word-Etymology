@@ -93,9 +93,9 @@ def get_wiki_pronunciation(url, language):
     if pronunciation_h3 is None:
         return "Not found."
 
-    # The ul tag for the pronunciation list is 10 siblings over from the h3 tag
+    # Find the ul tag following the h3
     pronunciation_ul_html = pronunciation_h3
-    for i in range(10):
+    while str(pronunciation_ul_html)[0:4] != "<ul>":
         pronunciation_ul_html = pronunciation_ul_html.next_sibling
 
     # Need to reformat the pronunciations so that the same ones arent repeated and there's one on each line
@@ -150,9 +150,9 @@ def get_wiki_etymology(url, language):
     if etymology_h3 is None:
         return "Not found."
 
-    # The p tag for the etymology is 10 siblings over from the h3 tag
+    # Find the p tag following the etymology heading
     etymology_p_html = etymology_h3
-    for i in range(10):
+    while str(etymology_p_html)[0:3] != "<p>":
         etymology_p_html = etymology_p_html.next_sibling
 
     return etymology_p_html.get_text().rstrip()
@@ -345,7 +345,3 @@ def return_section_soup(url, language):
             new_html += str(line)
 
         return BeautifulSoup(new_html, "lxml")
-
-
-
-print(get_wiki_pronunciation("https://en.wiktionary.org/wiki/name#English", "English"))
