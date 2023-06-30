@@ -186,7 +186,7 @@ def get_wiki_definition(url, language):
 
     # Get the <p> text following the definition header
     definition_html = definition_tag
-    for i in range(10):
+    while str(definition_html)[0:3] != "<p>":
         definition_html = definition_html.next_sibling
 
     output_text = ""

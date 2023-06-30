@@ -20,8 +20,7 @@ while True:
     if language == "exit()":
         break
 
-    # Fix formatting for word and language
-    word = word.lower()
+    # Fix formatting for language
     language = language.title()
 
     url_tuple = ws.get_wiki_url(word, language)
